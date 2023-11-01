@@ -37,6 +37,7 @@ const BarChart = ({
 
   const labelsDomain = data.map((d) => d.label);
   const valuesDomain = [0, d3.max(data, (d) => d.value) as number];
+  const test = 0;
 
   const xScale =
     orientation === 'horizontal'
