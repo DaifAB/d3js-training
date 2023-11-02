@@ -1,6 +1,28 @@
 import BarChart from '@/src/components/charts/BarChart';
+import BubbleChart from '@/src/components/charts/BubbleChart';
 import LineChart from '@/src/components/charts/LineChart';
 import PieChart from '@/src/components/charts/PieChart';
+import { BubbleChartData } from '@/src/types/chartsDataTypes';
+
+const generateDummyData = (): BubbleChartData[] => {
+  const generateRandomDate = (startDate: Date, endDate: Date): Date => {
+    return new Date(
+      startDate.getTime() +
+        Math.random() * (endDate.getTime() - startDate.getTime())
+    );
+  };
+
+  const startDate = new Date('2022-01-01');
+  const endDate = new Date('2023-12-31');
+  const dummyData: BubbleChartData[] = Array.from({ length: 50 }, () => {
+    // const xValue = generateRandomDate(startDate, endDate);
+    const xValue = Math.floor(Math.random() * 100);
+    const yValue = Math.floor(Math.random() * 5000);
+    const zValue = Math.floor(Math.random() * 100);
+    return { xValue, yValue, zValue };
+  });
+  return dummyData;
+};
 
 export default function Home() {
   const barChartData = [
@@ -70,16 +92,28 @@ export default function Home() {
     { label: 'C', value: 25 },
   ];
 
+  const bubbleChartData = generateDummyData();
+
   const colors = ['#137B80', '#8E6C8A', '#E3BA22', ' #005D6E'];
   return (
     <main className="flex min-h-screen items-center justify-center flex-col gap-10">
-      <BarChart data={barChartData} colors={colors} axisLabel="Axis label" />
+      {/* <BarChart data={barChartData} colors={colors} axisLabel="Axis label" /> */}
+      <BarChart data={barChartData} xAxisLabel="Category" yAxisLabel="Sales" />
       <LineChart
         data={lineChartData}
         yAxisLabel="YAxis label"
         color={colors[0]}
       />
-      <PieChart data={pieChartData} colors={colors} type="donut" />
+      <div className="flex gap-10">
+        <PieChart data={pieChartData} colors={colors} type="pie" />
+        <PieChart data={pieChartData} colors={colors} type="donut" />
+      </div>
+      <BubbleChart
+        data={bubbleChartData}
+        xAxisLabel="Date"
+        yAxisLabel="Sales"
+        zAxisLabel="Average Order Value"
+      />
     </main>
   );
 }

@@ -2,12 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
-import { type } from 'os';
-
-interface PieChartData {
-  label: string;
-  value: number;
-}
+import { PieChartData } from '@/src/types/chartsDataTypes';
 
 interface PieChartProps {
   data: PieChartData[];
@@ -24,12 +19,15 @@ const PieChart: React.FC<PieChartProps> = ({
   colors,
   type = 'pie',
 }) => {
-  const chartRef = useRef<SVGSVGElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    if (!chartRef.current) return;
+    if (!svgRef.current) return;
 
-    const svg = d3.select(chartRef.current);
+    const svg = d3
+      .select(svgRef.current)
+      .attr('width', width)
+      .attr('height', height);
     const radius = Math.min(width, height) / 2;
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -64,7 +62,7 @@ const PieChart: React.FC<PieChartProps> = ({
       .text((d) => d.data.label);
   }, [data, width, height, colors]);
 
-  return <svg ref={chartRef} width={width} height={height}></svg>;
+  return <svg ref={svgRef}></svg>;
 };
 
 export default PieChart;

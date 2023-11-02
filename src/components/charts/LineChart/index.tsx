@@ -4,13 +4,7 @@ import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 import { ChartMargin, LineChartData } from '@/src/types/chartsDataTypes';
 import { chartColors } from '@/src/constants/colors';
-
-const MARGIN: ChartMargin = {
-  top: 20,
-  right: 20,
-  bottom: 40,
-  left: 100,
-};
+import { MARGIN } from '@/src/constants/layout';
 
 interface LineChartProps {
   data: LineChartData[];
@@ -32,16 +26,17 @@ const LineChart = ({
   margin = MARGIN,
   color = 'steelblue',
   isArea = false,
-  animate = false,
+  animate = true,
   animationDuration = 2000,
   yAxisLabel = '',
   lineWeight = 1.5,
 }: LineChartProps) => {
-  const chartRef = useRef<SVGSVGElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  const isDate = data[0].xValue instanceof Date;
 
   useEffect(() => {
-    const isDate = data[0].xValue instanceof Date;
-
+    const svg = d3.select(svgRef.current);
     const x = isDate
       ? d3
           .scaleUtc()
@@ -71,9 +66,9 @@ const LineChart = ({
       .y0(height - margin.bottom)
       .y1((d) => y(d.yValue)!);
 
-    const svg = d3
-      .select(chartRef.current)
-      .attr('viewBox', `0 0 ${width} ${height}`)
+    svg.selectAll('g').remove();
+
+    svg
       .attr('width', width)
       .attr('height', height)
       .style('overflow', 'visible');
@@ -107,10 +102,13 @@ const LineChart = ({
         g.selectAll('.tick text').attr('fill', chartColors.secondaryTextColor);
       })
       .append('text')
-      .attr('x', -margin.left)
-      .attr('y', 10)
-      .attr('fill', chartColors.mainTextColor)
-      .attr('text-anchor', 'start')
+      .attr('fill', 'currentColor')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -height / 2)
+      .attr('y', -margin.left)
+      .attr('dy', '1em')
+      .style('text-anchor', 'middle')
+      .style('font-size', '16px')
       .text(yAxisLabel);
 
     const linePath = svg
@@ -143,7 +141,7 @@ const LineChart = ({
     }
   }, [data, height, width, margin]);
 
-  return <svg ref={chartRef}></svg>;
+  return <svg ref={svgRef}></svg>;
 };
 
 export default LineChart;

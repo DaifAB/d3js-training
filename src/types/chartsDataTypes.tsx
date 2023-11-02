@@ -14,3 +14,14 @@ export interface ChartMargin {
   bottom: number;
   left: number;
 }
+
+export interface BubbleChartData {
+  xValue: Date | number;
+  yValue: number;
+  zValue: number;
+}
+
+export interface PieChartData {
+  label: string;
+  value: number;
+}
