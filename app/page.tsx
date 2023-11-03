@@ -1,6 +1,8 @@
 import BarChart from '@/src/components/charts/BarChart';
 import BubbleChart from '@/src/components/charts/BubbleChart';
+import HierarchicalEdgeBundling from '@/src/components/charts/HierarchicalEdgeBundling';
 import LineChart from '@/src/components/charts/LineChart';
+import Map from '@/src/components/charts/Map';
 import PieChart from '@/src/components/charts/PieChart';
 import { BubbleChartData } from '@/src/types/chartsDataTypes';
 
@@ -15,14 +17,35 @@ const generateDummyData = (): BubbleChartData[] => {
   const startDate = new Date('2022-01-01');
   const endDate = new Date('2023-12-31');
   const dummyData: BubbleChartData[] = Array.from({ length: 50 }, () => {
-    // const xValue = generateRandomDate(startDate, endDate);
-    const xValue = Math.floor(Math.random() * 100);
+    const xValue = generateRandomDate(startDate, endDate);
+    // const xValue = Math.floor(Math.random() * 100);
     const yValue = Math.floor(Math.random() * 5000);
     const zValue = Math.floor(Math.random() * 100);
     return { xValue, yValue, zValue };
   });
   return dummyData;
 };
+
+function generateRandomPointInBrazil(): [number, number] {
+  // Bounding box for Brazil's latitude and longitude
+  const minLat = -33.75; // Southernmost point
+  const maxLat = 5.25; // Northernmost point
+  const minLon = -74.0; // Westernmost point
+  const maxLon = -34.8; // Easternmost point
+
+  const randomLat = minLat + Math.random() * (maxLat - minLat);
+  const randomLon = minLon + Math.random() * (maxLon - minLon);
+
+  return [randomLon, randomLat];
+}
+
+function generateRandomPointsInBrazil(numPoints: number): [number, number][] {
+  const points: [number, number][] = [];
+  for (let i = 0; i < numPoints; i++) {
+    points.push(generateRandomPointInBrazil());
+  }
+  return points;
+}
 
 export default function Home() {
   const barChartData = [
@@ -95,9 +118,55 @@ export default function Home() {
   const bubbleChartData = generateDummyData();
 
   const colors = ['#137B80', '#8E6C8A', '#E3BA22', ' #005D6E'];
+
+  const cities = [
+    {
+      id: 'CityA',
+      purchases: ['CityB', 'CityC', 'CityD'],
+      x: 50,
+      y: 200,
+    },
+    {
+      id: 'CityB',
+      purchases: ['CityA', 'CityC', 'CityE'],
+      x: 200,
+      y: 50,
+    },
+    {
+      id: 'CityC',
+      purchases: ['CityA', 'CityB', 'CityD', 'CityE'],
+      x: 350,
+      y: 200,
+    },
+    {
+      id: 'CityD',
+      purchases: ['CityA', 'CityC'],
+      x: 200,
+      y: 350,
+    },
+    {
+      id: 'CityE',
+      purchases: ['CityB', 'CityC'],
+      x: 500,
+      y: 200,
+    },
+  ];
+
+  const data: [number, number][] = generateRandomPointsInBrazil(10);
+
   return (
     <main className="flex min-h-screen items-center justify-center flex-col gap-10">
-      {/* <BarChart data={barChartData} colors={colors} axisLabel="Axis label" /> */}
+      <Map
+        data={[
+          [-52, -15],
+          [-35, -7],
+          [-71, -9],
+          [-46.63929204800168, -23.54562128115268],
+          [-43.17405884636481, -22.90247241249798],
+          [-51.17998743, -0.039598369],
+          [-60.6199797, -3.289580873],
+        ]}
+      />
       <BarChart data={barChartData} xAxisLabel="Category" yAxisLabel="Sales" />
       <LineChart
         data={lineChartData}
@@ -114,6 +183,7 @@ export default function Home() {
         yAxisLabel="Sales"
         zAxisLabel="Average Order Value"
       />
+      <HierarchicalEdgeBundling cities={cities} />
     </main>
   );
 }
